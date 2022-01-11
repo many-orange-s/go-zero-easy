@@ -1,0 +1,47 @@
+syntax = "v1"
+
+service user {
+	@doc "用户的登录操作"
+	@handler Login
+	post /user/login (UserLogin) returns (JWT)
+	
+	@doc "用户注册"
+	@handler Register
+	post /user/register (UserMsg)
+}
+
+@server(
+	jwt : Auth
+	group : participate
+)
+
+service user {
+	@doc "用户需修改秘密或者个人信息"
+	@handler ModifyInformation
+	post /user/modify (UserMsg)
+	
+	@doc "用户查看自己的个人信息"
+	@handler ShowMsg
+	get /user/show  returns (UserMsg)
+}
+
+type (
+	UserLogin {
+		Account  string `json:"account"`
+		Password string `json:"password"`
+	}
+
+	JWT {
+		Token string `json:"token"`
+	}
+
+	UserMsg {
+		Account  string `json:"account"`
+		Password string `json:"password"`
+		Name     string `json:"name"`
+		Gender   string `json:"gender"`
+		Phone    string `josn:"phone"`
+		Address  string `json:"address"`
+		Email    string `json:"email"`
+	}
+)

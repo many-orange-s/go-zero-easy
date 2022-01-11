@@ -3,7 +3,11 @@ package errorx
 /*
 这个里面放的都是api里面的err还有返回给前端的错误
 */
-const ()
+const (
+	InvalidParam ErrInt = 1000
+	SystemBusy
+	PasswordErr
+)
 
 // ErrInt 自定义错误码
 type ErrInt int
@@ -24,7 +28,7 @@ func (c *CodeError) Error() string {
 	return c.Msg
 }
 
-// NewCodeErr 可以说是在系统里面放转动 后面会转换到Response里面
+// NewCodeErr 可以说是在系统里面放 后面会转换到Response里面
 func NewCodeErr(code ErrInt, msg string) error {
 	return &CodeError{code, msg}
 }
