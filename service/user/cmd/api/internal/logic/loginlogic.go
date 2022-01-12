@@ -9,6 +9,7 @@ import (
 	"go-zero-easy/commen/errorx/errconcrete"
 	"go-zero-easy/service/user/cmd/api/internal/svc"
 	"go-zero-easy/service/user/cmd/api/internal/types"
+	"log"
 	"time"
 
 	"github.com/tal-tech/go-zero/core/logx"
@@ -37,12 +38,13 @@ func (l *LoginLogic) Login(req types.UserLogin) (resp *types.JWT, err error) {
 		if ok := errors.Is(err, sqlx.ErrNotFound); ok {
 			return nil, &errorx.CodeError{Code: errorx.InvalidParam, Msg: errconcrete.SqlNotFound}
 		} else {
+			log.Println("Login FindOneFound err :", err)
 			return nil, &errorx.CodeError{Code: errorx.SystemBusy, Msg: errconcrete.InterErr}
 		}
 	}
 
 	if usermsg.Password != password {
-		return nil, errorx.NewCodeErr(errorx.PasswordErr, errconcrete.PasswordErr)
+		return nil, errorx.NewCodeErr(errorx.InvalidParam, errconcrete.PasswordErr)
 	}
 
 	now := time.Now().Unix()
@@ -50,8 +52,11 @@ func (l *LoginLogic) Login(req types.UserLogin) (resp *types.JWT, err error) {
 	expire := l.svcCtx.Config.Auth.AccessExpire
 	jwtoken, err := l.getJwtToken(secret, now, expire, usermsg.Uid)
 	if err != nil {
+		log.Println("Login getJwtToken err:", err)
 		return nil, errorx.NewCodeErr(errorx.SystemBusy, errconcrete.InterErr)
 	}
+
+	// 在返回的时候必须要初始化
 	resp = new(types.JWT)
 	resp.Token = jwtoken
 	return

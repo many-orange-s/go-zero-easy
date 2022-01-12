@@ -2,11 +2,14 @@ package participate
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"go-zero-easy/commen/errorx"
 	"go-zero-easy/commen/errorx/errconcrete"
 	"go-zero-easy/service/user/cmd/api/internal/svc"
 	"go-zero-easy/service/user/cmd/api/internal/types"
 	"go-zero-easy/service/user/model"
+	"log"
 
 	"github.com/tal-tech/go-zero/core/logx"
 )
@@ -26,14 +29,25 @@ func NewModifyInformationLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 }
 
 func (l *ModifyInformationLogic) ModifyInformation(req types.UserMsg) error {
-	uid := l.ctx.Value("uid")
-	_, err := l.svcCtx.UserModel.FindOne(uid.(int64))
+	uidNumber := json.Number(fmt.Sprintf("%v", l.ctx.Value("userId")))
+	uid, err := uidNumber.Int64()
+	if err != nil {
+		log.Println(err)
+		return &errorx.CodeError{Code: errorx.SystemBusy, Msg: errconcrete.InterErr}
+	}
+	log.Println(uid)
+
+	if uid < 0 {
+		return &errorx.CodeError{Code: errorx.InvalidParam, Msg: errconcrete.UserUidValid}
+	}
+
+	_, err = l.svcCtx.UserModel.FindOne(uid)
 	if err != nil {
 		return &errorx.CodeError{Code: errorx.InvalidParam, Msg: errconcrete.UserNotHasMsg}
 	}
 
 	o := &model.Usermsg{
-		Uid:      uid.(int64),
+		Uid:      uid,
 		Account:  req.Account,
 		Password: req.Password,
 		Name:     req.Name,
@@ -44,6 +58,7 @@ func (l *ModifyInformationLogic) ModifyInformation(req types.UserMsg) error {
 	}
 	err = l.svcCtx.UserModel.Update(o)
 	if err != nil {
+		log.Println("modifyInformation update err", err)
 		return &errorx.CodeError{Code: errorx.SystemBusy, Msg: errconcrete.InterErr}
 	}
 	return nil

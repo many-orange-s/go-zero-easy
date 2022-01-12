@@ -3,15 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/tal-tech/go-zero/core/conf"
+	"github.com/tal-tech/go-zero/rest"
 	"github.com/tal-tech/go-zero/rest/httpx"
 	"go-zero-easy/commen/errorx"
 	"go-zero-easy/service/user/cmd/api/internal/config"
 	"go-zero-easy/service/user/cmd/api/internal/handler"
 	"go-zero-easy/service/user/cmd/api/internal/svc"
 	"net/http"
-
-	"github.com/tal-tech/go-zero/core/conf"
-	"github.com/tal-tech/go-zero/rest"
 )
 
 var configFile = flag.String("f", "etc/user.yaml", "the config file")

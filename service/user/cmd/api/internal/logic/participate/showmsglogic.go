@@ -2,13 +2,16 @@ package participate
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/tal-tech/go-zero/core/logx"
 	"github.com/tal-tech/go-zero/core/stores/sqlx"
 	"go-zero-easy/commen/errorx"
 	"go-zero-easy/commen/errorx/errconcrete"
 	"go-zero-easy/service/user/cmd/api/internal/svc"
 	"go-zero-easy/service/user/cmd/api/internal/types"
+	"log"
 )
 
 type ShowMsgLogic struct {
@@ -26,12 +29,26 @@ func NewShowMsgLogic(ctx context.Context, svcCtx *svc.ServiceContext) ShowMsgLog
 }
 
 func (l *ShowMsgLogic) ShowMsg() (resp *types.UserMsg, err error) {
-	uid := l.ctx.Value("uid")
-	usermsg, err := l.svcCtx.UserModel.FindOne(uid.(int64))
+	// 这里面不能直接从l.ctx.Value("userId")拿出来会报错
+	// 要这样子转换
+	uidNumber := json.Number(fmt.Sprintf("%v", l.ctx.Value("userId")))
+	uid, err := uidNumber.Int64()
+	if err != nil {
+		log.Println(err)
+		return nil, &errorx.CodeError{Code: errorx.SystemBusy, Msg: errconcrete.InterErr}
+	}
+	log.Println(uid)
+
+	if uid < 0 {
+		return nil, &errorx.CodeError{Code: errorx.InvalidParam, Msg: errconcrete.UserUidValid}
+	}
+
+	usermsg, err := l.svcCtx.UserModel.FindOne(uid)
 	if err != nil {
 		if errors.Is(err, sqlx.ErrNotFound) {
 			return nil, &errorx.CodeError{Code: errorx.InvalidParam, Msg: errconcrete.UserNotHasMsg}
 		} else {
+			log.Println("showMsg FindOne err", err)
 			return nil, &errorx.CodeError{Code: errorx.SystemBusy, Msg: errconcrete.InterErr}
 		}
 	}
