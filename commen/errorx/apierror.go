@@ -6,7 +6,6 @@ package errorx
 const (
 	InvalidParam ErrInt = 1000
 	SystemBusy
-	PasswordErr
 )
 
 // ErrInt 自定义错误码

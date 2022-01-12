@@ -7,6 +7,7 @@ import (
 	"go-zero-easy/commen/errorx/errconcrete"
 	"go-zero-easy/service/user/cmd/api/internal/svc"
 	"go-zero-easy/service/user/cmd/api/internal/types"
+	"go-zero-easy/service/user/model"
 	"log"
 )
 
@@ -25,9 +26,31 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) RegisterL
 }
 
 func (l *RegisterLogic) Register(req types.UserMsg) error {
-	log.Println("0000000000")
-	return &errorx.CodeError{
-		Code: errorx.SystemBusy,
-		Msg:  errconcrete.InterErr,
+	account := req.Account
+	_, err := l.svcCtx.UserModel.FindOneByAccount(account)
+	if err == nil {
+		return &errorx.CodeError{
+			Code: errorx.InvalidParam,
+			Msg:  errconcrete.UserHasExit,
+		}
 	}
+
+	o := &model.Usermsg{
+		Name:     req.Name,
+		Gender:   req.Gender,
+		Phone:    req.Phone,
+		Address:  req.Address,
+		Email:    req.Email,
+		Account:  req.Account,
+		Password: req.Password,
+	}
+	_, err = l.svcCtx.UserModel.Insert(o)
+	if err != nil {
+		log.Println("Register insert err:", err)
+		return &errorx.CodeError{
+			Code: errorx.SystemBusy,
+			Msg:  errconcrete.InterErr,
+		}
+	}
+	return nil
 }

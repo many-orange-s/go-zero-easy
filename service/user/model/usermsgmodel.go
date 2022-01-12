@@ -15,7 +15,7 @@ import (
 var (
 	usermsgFieldNames          = builder.RawFieldNames(&Usermsg{})
 	usermsgRows                = strings.Join(usermsgFieldNames, ",")
-	usermsgRowsExpectAutoSet   = strings.Join(stringx.Remove(usermsgFieldNames, "`create_time`", "`update_time`"), ",")
+	usermsgRowsExpectAutoSet   = strings.Join(stringx.Remove(usermsgFieldNames, "`uid`", "`create_time`", "`update_time`"), ",")
 	usermsgRowsWithPlaceHolder = strings.Join(stringx.Remove(usermsgFieldNames, "`uid`", "`create_time`", "`update_time`"), "=?,") + "=?"
 
 	cacheUsermsgUidPrefix     = "cache:usermsg:uid:"
