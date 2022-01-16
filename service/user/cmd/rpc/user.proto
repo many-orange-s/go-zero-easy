@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package user;
+
+service user {
+  rpc GetUserMsg(UserId) returns (UserMsg);
+  rpc GetSomeUserMsg (stream UserId) returns (stream UserMsg);
+}
+
+message UserId{
+  int64 Uid = 1;
+}
+
+message UserMsg {
+  int64 Uid = 1;
+  string Name = 2;
+  string Gender = 3;
+  string Phone = 4;
+  string Address = 5;
+  string Email = 6;
+}

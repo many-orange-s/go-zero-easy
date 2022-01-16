@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	InvalidInfo  = "Invalid information received"
-	NotFoundInfo = "Request entity not found"
+	InvalidInfo  = "无效数据"
+	NotFoundInfo = "请求实体没有找到"
+	InternalInfo = "内部错误"
 )
 
 func HandlerRpcError(code codes.Code, filed, msg string) error {
@@ -19,8 +20,9 @@ func HandlerRpcError(code codes.Code, filed, msg string) error {
 		errorStatus = status.New(codes.InvalidArgument, InvalidInfo)
 	case codes.NotFound:
 		errorStatus = status.New(codes.NotFound, NotFoundInfo)
+	case codes.Internal:
+		errorStatus = status.New(codes.Internal, InternalInfo)
 	default:
-
 	}
 
 	ds, err := errorStatus.WithDetails(

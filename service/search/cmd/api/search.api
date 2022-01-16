@@ -1,0 +1,70 @@
+syntax = "v1"
+
+service search {
+	@doc "查找书籍"
+	@handler SearchBook
+	get /search/book/:name  (BookName) returns (BookSet)
+}
+
+@server (
+	jwt : Auth
+	group : Members
+)
+
+service search{
+	@doc "会员来借取书籍"
+	@handler GetBook
+	get /search/get/book/:bookid (BookID)
+	
+	@doc "会员来归还书籍"
+	@handler ReturnBook
+	get /search/return/book/:bookid (BookID)
+	
+	@doc "会员查看自己借的书的详细信息"
+	@handler ViewBook
+	get /search/view/book returns (BookSet)
+	
+	@doc "会员查看借某一本书的人的基础信息"
+	@handler ViewWhoMsg
+	get /search/viewmsg/book/:bookid  (BookID) returns (PeopleMsg)
+	
+	@doc "查看自己借了多少本书"
+	@handler ViewHowBook
+	get /search/viewhow/book returns (Count)
+}
+
+type (
+	BookMsg {
+		Number string `json:"number"`
+		Name   string `json:"name"`
+		Count  int    `json:"count"`
+	}
+
+	BookSet {
+		BookMsgs []*BookMsg `json:"bookMsgs"`
+	}
+
+	Msg {
+		Name    string `json:"name"`
+		Gender  string `json:"gender"`
+		Email   string `json:"email"`
+		Phone   string `json:"phone"`
+		Address string `json:"address"`
+	}
+
+	PeopleMsg {
+		People []Msg `json:"people"`
+	}
+
+	Count {
+		Num int64 `json:"num"`
+	}
+
+	BookName {
+		Name string `json:"name"`
+	}
+
+	BookID {
+		Id string `json:"id"`
+	}
+)
