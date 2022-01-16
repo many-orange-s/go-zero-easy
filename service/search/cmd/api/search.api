@@ -53,7 +53,7 @@ type (
 	}
 
 	PeopleMsg {
-		People []Msg `json:"people"`
+		People []*Msg `json:"people"`
 	}
 
 	Count {

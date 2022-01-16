@@ -31,6 +31,7 @@ type (
 		Delete(id int64) error
 		SearchAllMsgByUid(uid int64) ([]string, error)
 		SearchHowManyBook(uid int64) (int64, error)
+		SearchWhoLookBook(bookid string) ([]*int64, error)
 	}
 
 	defaultLendModel struct {
@@ -51,6 +52,21 @@ func NewLendModel(conn sqlx.SqlConn, c cache.CacheConf) LendModel {
 		table:      "`lend`",
 	}
 }
+func (m *defaultLendModel) SearchWhoLookBook(bookid string) ([]*int64, error) {
+	var nums []*int64
+	query := fmt.Sprintf("select `uid` from %s where `bookid` = ?", m.table)
+	err := m.QueryRowsNoCache(&nums, query, bookid)
+
+	switch err {
+	case nil:
+		return nums, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
 func (m *defaultLendModel) SearchHowManyBook(uid int64) (int64, error) {
 	var num int64
 	query := fmt.Sprintf("select count(uid) from %s group by `uid` having uid = ?", m.table)

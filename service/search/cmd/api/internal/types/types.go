@@ -20,7 +20,7 @@ type Msg struct {
 }
 
 type PeopleMsg struct {
-	People []Msg `json:"people"`
+	People []*Msg `json:"people"`
 }
 
 type Count struct {

@@ -27,4 +27,5 @@ const (
 	BookHasRendByYou    = "这本书已经被你给借过了"
 	BookNotRendByYou    = "你还没有借过这本书"
 	BookNotAnyRend      = "你没有借过任何一本书"
+	BookNotRend         = "这本书没有人来借"
 )
